@@ -1,0 +1,12 @@
+CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
+HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/AFNetworking" "${PODS_ROOT}/Headers/Public/MMKV" "${PODS_ROOT}/Headers/Public/MMKVCore" "${PODS_ROOT}/Headers/Public/ZYGCDManager"
+LIBRARY_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/AFNetworking" "${PODS_CONFIGURATION_BUILD_DIR}/MMKV" "${PODS_CONFIGURATION_BUILD_DIR}/MMKVCore" "${PODS_CONFIGURATION_BUILD_DIR}/ZYGCDManager"
+OTHER_CFLAGS = $(inherited) -isystem "${PODS_ROOT}/Headers/Public" -isystem "${PODS_ROOT}/Headers/Public/AFNetworking" -isystem "${PODS_ROOT}/Headers/Public/MMKV" -isystem "${PODS_ROOT}/Headers/Public/MMKVCore" -isystem "${PODS_ROOT}/Headers/Public/ZYGCDManager"
+OTHER_LDFLAGS = $(inherited) -ObjC -l"AFNetworking" -l"MMKV" -l"MMKVCore" -l"ZYGCDManager" -l"c++" -l"z" -framework "CoreFoundation" -framework "Foundation" -framework "UIKit"
+PODS_BUILD_DIR = ${BUILD_DIR}
+PODS_CONFIGURATION_BUILD_DIR = ${PODS_BUILD_DIR}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
+PODS_PODFILE_DIR_PATH = ${SRCROOT}/.
+PODS_ROOT = ${SRCROOT}/Pods
+PODS_XCFRAMEWORKS_BUILD_DIR = $(PODS_CONFIGURATION_BUILD_DIR)/XCFrameworkIntermediates
+USE_RECURSIVE_SCRIPT_INPUTS_IN_SCRIPT_PHASES = YES

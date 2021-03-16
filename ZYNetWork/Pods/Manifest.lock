@@ -1,0 +1,42 @@
+PODS:
+  - AFNetworking (4.0.1):
+    - AFNetworking/NSURLSession (= 4.0.1)
+    - AFNetworking/Reachability (= 4.0.1)
+    - AFNetworking/Security (= 4.0.1)
+    - AFNetworking/Serialization (= 4.0.1)
+    - AFNetworking/UIKit (= 4.0.1)
+  - AFNetworking/NSURLSession (4.0.1):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (4.0.1)
+  - AFNetworking/Security (4.0.1)
+  - AFNetworking/Serialization (4.0.1)
+  - AFNetworking/UIKit (4.0.1):
+    - AFNetworking/NSURLSession
+  - MMKV (1.2.7):
+    - MMKVCore (~> 1.2.7)
+  - MMKVCore (1.2.7)
+  - ZYGCDManager (0.0.4)
+
+DEPENDENCIES:
+  - AFNetworking
+  - MMKV
+  - ZYGCDManager
+
+SPEC REPOS:
+  trunk:
+    - AFNetworking
+    - MMKV
+    - MMKVCore
+    - ZYGCDManager
+
+SPEC CHECKSUMS:
+  AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
+  MMKV: 22e5136f7d00197bc0fc9694b7f71519f0d1ca12
+  MMKVCore: 607b7b05f2c2140056b5d338e45f2c14bf3f4232
+  ZYGCDManager: 515c526c8cf78289b6de71a0e412c2047a30bf72
+
+PODFILE CHECKSUM: 9faae8f575074a49b829482e4cb198c9a1cafedc
+
+COCOAPODS: 1.10.0
