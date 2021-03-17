@@ -10,7 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /// 访问结果状态
-typedef NS_ENUM(NSUInteger, ZYNetWorkResponseStatus) {
+typedef NS_ENUM(NSInteger, ZYNetWorkResponseStatus) {
     ZYNetWorkResponseRequesting = 0, //访问中
     ZYNetWorkResponseSuccess, //访问成功
     ZYNetWorkResponseFaileAndServer, //访问失败，服务器失败

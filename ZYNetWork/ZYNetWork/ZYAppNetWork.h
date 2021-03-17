@@ -44,7 +44,7 @@
 @end
 
 /// 访问方式
-typedef NS_ENUM(NSUInteger, ZYNetWorkRequestType) {
+typedef NS_ENUM(NSInteger, ZYNetWorkRequestType) {
     ZYNetWorkRequestTypePOST = 0, //post
     ZYNetWorkRequestTypeGET, //get
     ZYNetWorkRequestTypeDELETE, //delete
@@ -67,13 +67,13 @@ typedef NS_ENUM(NSInteger, ZYNetWorkResponseSerializerType) {
 };
 
 /// 请求内容格式
-typedef NS_ENUM(NSUInteger, ZYNetWorkContentType) {
+typedef NS_ENUM(NSInteger, ZYNetWorkContentType) {
     ZYNetWorkContentTypeJSON = 0, //application/json,
     ZYNetWorkContentTypeFORM //application/x-www-form-urlencoded
 };
 
 /// Token类型
-typedef NS_ENUM(NSUInteger, ZYNetWorkTokenType) {
+typedef NS_ENUM(NSInteger, ZYNetWorkTokenType) {
     ZYNetWorkTokenDefault = 0, //默认token。token=未登录token或者用户登录后的通用token
     ZYNetWorkTokenOther, //其他token
 };
