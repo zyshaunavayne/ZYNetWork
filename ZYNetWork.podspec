@@ -9,7 +9,7 @@
 Pod::Spec.new do |spec|
 
   spec.name         = "ZYNetWork"
-  spec.version      = "0.0.2"
+  spec.version      = "0.0.3"
   spec.summary      = "ZYNetWork"
   spec.description  = "基于AFN的网络请求二次封装，适用于MVC/MVVM"
   spec.homepage     = "https://github.com/zyshaunavayne/ZYNetWork"
