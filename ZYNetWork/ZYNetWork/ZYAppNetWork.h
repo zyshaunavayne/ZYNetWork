@@ -44,7 +44,7 @@
 @end
 
 /// 访问方式
-typedef NS_ENUM(NSInteger, ZYNetWorkRequestType) {
+typedef NS_ENUM(NSUInteger, ZYNetWorkRequestType) {
     ZYNetWorkRequestTypePOST = 0, //post
     ZYNetWorkRequestTypeGET, //get
     ZYNetWorkRequestTypeDELETE, //delete
@@ -53,27 +53,27 @@ typedef NS_ENUM(NSInteger, ZYNetWorkRequestType) {
 };
 
 /// 请求头格式
-typedef NS_ENUM(NSInteger, ZYNetWorkRequestSerializerType) {
+typedef NS_ENUM(NSUInteger, ZYNetWorkRequestSerializerType) {
     ZYNetWorkRequestSerializerTypeAuto = 0, // 默认自动匹配，只需要设置ZYSgbNetWorkContentType
     ZYNetWorkRequestSerializerTypeJSON, //JSON请求头格式
     ZYNetWorkRequestSerializerTypeHTTP //HTTP请求头格式
 };
 
 /// 返回内容格式
-typedef NS_ENUM(NSInteger, ZYNetWorkResponseSerializerType) {
+typedef NS_ENUM(NSUInteger, ZYNetWorkResponseSerializerType) {
     ZYNetWorkResponseSerializerTypeAuto = 0, // 默认自动匹配，只需要设置 JSON Respone
     ZYNetWorkResponseSerializerTypeJSON, //JSON Response
     ZYNetWorkResponseSerializerTypeHTTP //HTTP Response
 };
 
 /// 请求内容格式
-typedef NS_ENUM(NSInteger, ZYNetWorkContentType) {
+typedef NS_ENUM(NSUInteger, ZYNetWorkContentType) {
     ZYNetWorkContentTypeJSON = 0, //application/json,
     ZYNetWorkContentTypeFORM //application/x-www-form-urlencoded
 };
 
 /// Token类型
-typedef NS_ENUM(NSInteger, ZYNetWorkTokenType) {
+typedef NS_ENUM(NSUInteger, ZYNetWorkTokenType) {
     ZYNetWorkTokenDefault = 0, //默认token。token=未登录token或者用户登录后的通用token
     ZYNetWorkTokenOther, //其他token
 };
