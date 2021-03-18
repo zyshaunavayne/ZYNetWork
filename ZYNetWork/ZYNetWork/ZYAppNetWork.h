@@ -142,6 +142,9 @@ typedef NS_ENUM(NSUInteger, ZYNetWorkTokenType) {
 /// 检测数据访问成功后对应的数据状态
 - (BOOL)checkReuqestResultCorrect:(NSDictionary *_Nullable)dic;
 
+/// msg显示的key
+- (NSString *_Nullable)msgKey;
+
 @end
 
 

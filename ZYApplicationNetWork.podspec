@@ -2,7 +2,7 @@
 Pod::Spec.new do |spec|
 
   spec.name         = "ZYApplicationNetWork"
-  spec.version      = "0.1.1"
+  spec.version      = "0.1.2"
   spec.summary      = "ZYApplicationNetWork"
   spec.description  = "based AFN for ZYApplicationNetWork"
   spec.homepage     = "https://github.com/zyshaunavayne/ZYNetWork"

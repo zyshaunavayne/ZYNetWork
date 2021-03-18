@@ -211,7 +211,7 @@
 {
     if ([[ZYNetWorkSingleton shareSingleton].networkType isEqualToString:@"-1"]) {
         NSMutableDictionary *faileDic = NSMutableDictionary.alloc.init;
-        [faileDic setObject:@"未连接到网络" forKey:@"msg"];
+        [faileDic setObject:@"未连接到网络" forKey:self.msgKey];
         [faileDic setObject:@"faile" forKey:@"state"];
         [faileDic setObject:NSDictionary.dictionary forKey:@"data"];
         self.responseData.responseStatus = ZYNetWorkResponseFaileAndNET;
@@ -503,7 +503,7 @@
     NSLog(@" 接口访问失败！\n 接口：%@ \n 入参：%@\n 访问方式：%ld \n 失败原因 == %@",self.requestUrl,self.parameters,self.requestType,error.description);
 
     NSMutableDictionary *faileDic = NSMutableDictionary.alloc.init;
-    [faileDic setObject:message ? message : @"访问失败！" forKey:@"msg"];
+    [faileDic setObject:message ? message : @"访问失败！" forKey:self.msgKey];
     [faileDic setObject:@"fail" forKey:@"state"];
     [faileDic setObject:NSDictionary.new forKey:@"data"];
     [faileDic setObject:[error.userInfo objectForKey:@"code"] forKey:@"code"];
@@ -535,7 +535,7 @@
             [self successBlock:dic];
         }
     }else{
-        [self faileBlock:[NSError errorWithDomain:@"" code:-100 userInfo:dic] message:[dic objectForKey:@"msg"]];
+        [self faileBlock:[NSError errorWithDomain:@"" code:-100 userInfo:dic] message:[dic objectForKey:self.msgKey]];
     }
 }
 
@@ -581,6 +581,11 @@
 - (BOOL)checkReuqestResultCorrect:(NSDictionary *)dic
 {
     return YES;
+}
+
+- (NSString *)msgKey
+{
+    return @"msg";
 }
 
 - (void)dealloc
