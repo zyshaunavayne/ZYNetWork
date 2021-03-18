@@ -135,6 +135,13 @@ typedef NS_ENUM(NSUInteger, ZYNetWorkTokenType) {
 /// 取消APP内所有的网络请求访问
 + (void)cancleAppAllRequest;
 
+#pragma mark -- 外部配置
+/// 获取token值
+- (NSString *_Nullable)setTokenCofig;
+
+/// 检测数据访问成功后对应的数据状态
+- (BOOL)checkReuqestResultCorrect:(NSDictionary *_Nullable)dic;
+
 @end
 
 
