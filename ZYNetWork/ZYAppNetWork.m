@@ -425,8 +425,6 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
             [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
             break;
     }
-    [request setValue:@"ios" forHTTPHeaderField:@"platform"];
-    [request setValue:@"app-api-java" forHTTPHeaderField:@"type"];
     return request;
 }
 
@@ -627,15 +625,9 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
 
     NSMutableDictionary *faileDic = NSMutableDictionary.alloc.init;
     [faileDic setObject:message ? message : @"访问失败！" forKey:@"msg"];
-    [faileDic setObject:@"fail" forKey:@"state"];
     [faileDic setObject:[error.userInfo objectForKey:@"data"] ? : NSDictionary.new forKey:@"data"];
     [faileDic setObject:[error.userInfo objectForKey:@"code"] ? [error.userInfo objectForKey:@"code"] : @"-100" forKey:@"code"];
-    [faileDic setObject:[error.userInfo objectForKey:@"errCode"] ? [error.userInfo objectForKey:@"errCode"] : @"-100" forKey:@"errCode"];
-    if ([[faileDic objectForKey:@"code"] integerValue] == 500) { /// 此处若code/errCode数据类型不正确，可能存在崩溃异常。
-        [faileDic setObject:[faileDic objectForKey:@"errCode"] forKey:@"code"];
-    }
     [self handleCodeConfig:[[faileDic objectForKey:@"code"] integerValue]];
-
     self.responseData.responseStatus = ZYNetWorkResponseFaileAndServer;
     [self clearResponseDataConfig];
     self.responseData.error = error;
@@ -656,20 +648,6 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
 - (void)handleRequestSuccess:(id)responseObject
 {
     NSDictionary *dic = [self returnRequestResult:responseObject];
-    
-    BOOL isEncryption = NO;
-    if (self.dataTask) {
-        NSHTTPURLResponse *response = (NSHTTPURLResponse *)self.dataTask.response;
-        NSDictionary *dic = [response allHeaderFields];
-        id encryption = dic[@"isEncryption"] ? dic[@"isEncryption"] : @"0";
-        isEncryption = [encryption integerValue] == 1 ? YES : NO;
-    }
-    
-    /// 新增加密 是否需要解密字典到数据中 isEncryption =  YES ，需要解密，默认不需要
-    NSMutableDictionary *saveDic = [NSMutableDictionary.alloc initWithDictionary:dic];
-    [saveDic setValue:@(isEncryption) forKey:@"isEncryption"];
-    dic = (NSDictionary *)saveDic;
-    
     if ([self checkReuqestResultCorrect:dic]) { //是否请求成功 赋值self.requestData 否则self.requestData = nil
         if (self.isCache) {
             if (![self compareLoaclCacheWithRequestDataIsSame:dic]) {
@@ -691,7 +669,7 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
         }
         [ZYAppNetWorkAgent.sharedAgent removeRequest:self];
     }else{
-        [self faileBlock:[NSError errorWithDomain:@"" code:-100 userInfo:dic] message:[dic objectForKey:@"msg"]];
+        [self faileBlock:[NSError errorWithDomain:@"" code:[[dic objectForKey:@"code"] integerValue] userInfo:dic] message:[dic objectForKey:@"msg"]];
     }
 }
 
@@ -744,39 +722,7 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
 /// 检测数据访问成功后对应的数据状态
 - (BOOL)checkReuqestResultCorrect:(NSDictionary *)dic
 {
-    BOOL isOk = NO;
-    BOOL isHaveCode = NO;
-    BOOL isHaveState = NO;
-    for (NSString *key in dic.allKeys) {
-        if ([key isEqualToString:@"code"]) {
-            isHaveCode = YES;
-        } else if ([key isEqualToString:@"state"]) {
-           isHaveState = YES;
-        }
-    }
-    
-    if (isHaveState) {
-        if ([[dic objectForKey:@"state"] isEqualToString:@"ok"]) {
-            isOk = YES;
-        }
-    }
-
-    else if (isHaveCode) {
-        id code = [dic objectForKey:@"code"];
-        if (![code isKindOfClass:NSString.class]) {
-            if ([code intValue] == 200 || [code intValue] == 0) {
-                isOk = YES;
-            }
-        }
-        
-        if (self.requestType == ZYNetWorkRequestTypeH5) {
-            if ([code intValue] == 200) {
-                isOk = YES;
-            }
-        }
-    }
-    
-    return isOk;
+    return YES;
 }
 
 - (void)dealloc
