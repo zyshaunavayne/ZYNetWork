@@ -107,6 +107,9 @@ typedef NS_ENUM(NSUInteger, ZYNetWorkResponseSerializerType) {
 /// 当前运行的task
 @property (nonatomic, strong, readonly) NSURLSessionDataTask *dataTask;
  
+/// 是否移除null的值，默认NO
+@property (nonatomic, assign) BOOL removesNullValues;
+
 /// 开始访问 需设置代理 否则没有回调
 - (void)startRequest;
 

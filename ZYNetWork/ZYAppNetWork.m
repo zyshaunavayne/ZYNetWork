@@ -451,7 +451,7 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
 - (AFJSONResponseSerializer *)JSONResponseSerializer
 {
     AFJSONResponseSerializer *response = AFJSONResponseSerializer.serializer;
-    response.removesKeysWithNullValues = NO;
+    response.removesKeysWithNullValues = self.removesNullValues;
     [response setAcceptableContentTypes:[NSSet setWithObjects:@"application/json",
                                              @"text/json",@"text/html",
                                              @"text/javascript",@"text/plain",@"image/jpeg",@"image/png",
