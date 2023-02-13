@@ -50,8 +50,8 @@ typedef NS_ENUM(NSUInteger, ZYNetWorkRequestType) {
 
 /// 请求头格式
 typedef NS_ENUM(NSUInteger, ZYNetWorkRequestSerializerType) {
-    ZYNetWorkRequestSerializerTypeJSON = 0, //默认自动匹配 JSON请求头格式
-    ZYNetWorkRequestSerializerTypeHTTP //HTTP请求头格式
+    ZYNetWorkRequestSerializerTypeHTTP = 0,//默认自动匹配 HTTP请求头格式
+    ZYNetWorkRequestSerializerTypeJSON //JSON请求头格式
 };
 
 /// 返回内容格式
@@ -80,7 +80,7 @@ typedef NS_ENUM(NSUInteger, ZYNetWorkResponseSerializerType) {
 /// 访问方式 默认 ZYNetWorkRequestTypePOST
 @property (nonatomic, assign) ZYNetWorkRequestType requestType;
 
-/// 请求头方式 默认 ZYNetWorkResponseSerializerTypeJSON，不用设置
+/// 请求头方式 默认 ZYNetWorkRequestSerializerTypeHTTP，不用设置
 @property (nonatomic, assign) ZYNetWorkRequestSerializerType requestSerializerType;
 
 /// 请求返回内容格式 默认 ZYNetWorkResponseSerializerTypeJson，不用设置
