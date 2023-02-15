@@ -454,7 +454,7 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
     response.removesKeysWithNullValues = self.removesNullValues;
     [response setAcceptableContentTypes:[NSSet setWithObjects:@"application/json",
                                              @"text/json",@"text/html",
-                                             @"text/javascript",@"text/plain",@"image/jpeg",@"image/png",
+                                             @"text/javascript",@"text/plain",@"image/jpeg",@"image/png",@"application/x-json",
                                              nil]];
     return response;
 }
@@ -464,7 +464,7 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
     AFHTTPResponseSerializer *response = AFHTTPResponseSerializer.serializer;
     [response setAcceptableContentTypes:[NSSet setWithObjects:@"application/json",
                                              @"text/json",@"text/html",
-                                             @"text/javascript",@"text/plain",@"image/jpeg",@"image/png",
+                                             @"text/javascript",@"text/plain",@"image/jpeg",@"image/png",@"application/x-json",
                                              nil]];
     return response;
 }
