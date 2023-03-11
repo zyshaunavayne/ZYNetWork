@@ -45,7 +45,6 @@ typedef NS_ENUM(NSUInteger, ZYNetWorkRequestType) {
     ZYNetWorkRequestTypePUT, //put
     ZYNetWorkRequestTypeBODY, // body
     ZYNetWorkRequestTypePATCH, //patch
-    ZYNetWorkRequestTypeH5 //获取H5地址专用，并非新的访问方式（临时占用）
 };
 
 /// 请求头格式

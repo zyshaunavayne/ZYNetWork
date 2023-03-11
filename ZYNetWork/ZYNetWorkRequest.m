@@ -46,39 +46,7 @@ static NSString *ZYNWAes128Key = @"payload";
 {
     id data = nil;
     if ([request.responseData.successResponse isKindOfClass:NSDictionary.class]) {
-        
         data = [self requestDataToModel:request.responseData.successResponse[@"data"]];
-        
-        /// 为H5接口地址获取时，单独处理
-        if (request.requestType == ZYNetWorkRequestTypeH5) {
-            NSString *key = [NSString stringWithFormat:@"%@",[(NSDictionary *)request.parameters objectForKey:@"param"]];
-            NSMutableDictionary *dic = NSMutableDictionary.alloc.init;
-            BOOL isOK = NO;
-            if ([data isKindOfClass:NSArray.class]) {
-                NSArray *array = data;
-                for (NSDictionary *h5Dic in array) {
-                    if ([key isEqualToString:[h5Dic objectForKey:@"key"]]) {
-                        dic = [NSMutableDictionary.alloc initWithDictionary:h5Dic];
-                        [dic setObject:(NSString *)[dic objectForKey:@"name"] forKey:@"url"];
-                        isOK = YES;
-                        break;
-                    }
-                }
-            }
-            
-            if (!isOK) {
-                [dic setValue:@"获取失败，未找到param信息" forKey:@"msg"];
-            }
-            data = dic;
-            NSLog(@"请求成功！\n 请求接口：%@ \n 请求成功：%@",request.requestUrl,data);
-            if ([request.responseData.successResponse isKindOfClass:NSDictionary.class]) {
-                NSMutableDictionary *dic = [NSMutableDictionary.alloc initWithDictionary:request.responseData.successResponse];
-                [dic setValue:data forKey:@"data"];
-                [dic removeObjectForKey:ZYNWAes128Key];
-                request.responseData.successResponse = dic;
-                self.responseData.successResponse = request.responseData.successResponse;
-            }
-        }
     }
     self.data = data;
     

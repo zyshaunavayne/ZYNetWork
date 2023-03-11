@@ -51,11 +51,6 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
         return;
     }
     
-    /// 如果requestType = H5 默认开启缓存
-    if (self.requestType == ZYNetWorkRequestTypeH5) {
-        self.isCache = YES;
-    }
-    
     if (!_manager) {
         /// 配置安全协议
         self.manager.securityPolicy.validatesDomainName = self.validatesDomainName;
@@ -152,9 +147,6 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
             break;
         case ZYNetWorkRequestTypePATCH:
             [self PATCH];
-            break;
-        case ZYNetWorkRequestTypeH5:
-            [self H5];
             break;
         default:
             ZYNSLog(@"未配置对应访问方式");
@@ -298,30 +290,6 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         __strong __typeof(weakSelf)self = weakSelf; if (!self) return;
 
-        if (task != self.dataTask) { return; }
-        [self faileBlock:error message:ZYNWServerErrorMsg];
-    }];
-    self.dataTask = dataTask;
-    [ZYAppNetWorkAgent.sharedAgent addRequest:self];
-}
-
-- (void)H5
-{
-    __weak __typeof(self)weakSelf = self;
-    __block NSURLSessionDataTask *dataTask;
-    dataTask = [self.manager GET:self.requestUrl parameters:@{} headers:self.header progress:^(NSProgress * _Nonnull uploadProgress) {
-        __strong __typeof(weakSelf)self = weakSelf; if (!self) return;
-        
-        if (dataTask != self.dataTask) { return; }
-        [self progessBlock:uploadProgress];
-    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        __strong __typeof(weakSelf)self = weakSelf; if (!self) return;
-        
-        if (task != self.dataTask) { return; }
-        [self handleRequestSuccess:responseObject];
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        __strong __typeof(weakSelf)self = weakSelf; if (!self) return;
-        
         if (task != self.dataTask) { return; }
         [self faileBlock:error message:ZYNWServerErrorMsg];
     }];
@@ -483,8 +451,6 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
         string = @"BODY";
     } else if (self.requestType == ZYNetWorkRequestTypeDELETE) {
         string = @"DELETE";
-    } else if (self.requestType == ZYNetWorkRequestTypeH5) {
-        string = @"H5";
     } else {
         string = @"未知";
     }
@@ -524,16 +490,10 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
     /// 读取header信息，例如；token、sign等
     for (NSString *headerKey in self.header.allKeys) {
         /// 因 签名随时间戳的变化而变化，所以签名不纳入key
-        if (![headerKey isEqualToString:@"sign"]) {
-            key = [NSString stringWithFormat:@"%@%@",key,self.header[headerKey]];
-        }
+        key = [NSString stringWithFormat:@"%@%@",key,self.header[headerKey]];
     }
-    NSString *mmkvKey = [NSString stringWithFormat:@"%@%@%@%@", self.requestUrl, key, [self.parameters description], [infoDictionary objectForKey:@"CFBundleShortVersionString"]];
     
-    /// H5缓存不需要跟随token信息变化而变化
-    if (self.requestType == ZYNetWorkRequestTypeH5) {
-        mmkvKey = [NSString stringWithFormat:@"%@%@", self.requestUrl, [infoDictionary objectForKey:@"CFBundleShortVersionString"]];
-    }
+    NSString *mmkvKey = [NSString stringWithFormat:@"%@%@%@%@", self.requestUrl, key, [self.parameters description], [infoDictionary objectForKey:@"CFBundleShortVersionString"]];
     return mmkvKey;
 }
 
@@ -591,12 +551,6 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
         [self requestSuccessResponseDataForDecrypttion];
     }
     
-    if (self.requestType != ZYNetWorkRequestTypeH5) {
-        if (self.isDebugLog) {
-            ZYNSLog(@"请求成功！\n 请求接口：%@ \n 请求成功：%@",self.requestUrl,[self dicToJson:self.responseData.successResponse]);
-        }
-    }
-    
     if (self.delegate && [self.delegate respondsToSelector:@selector(requestSuccess:)]) {
         self.responseData.responseDataType = dataType;
         [self.delegate requestSuccess:self];
@@ -651,20 +605,12 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
     if ([self checkReuqestResultCorrect:dic]) { //是否请求成功 赋值self.requestData 否则self.requestData = nil
         if (self.isCache) {
             if (![self compareLoaclCacheWithRequestDataIsSame:dic]) {
-                /// H5专用
-                if (self.requestType == ZYNetWorkRequestTypeH5) {
-                    if (![self archiveCache]) {
-                        [self successBlock:dic dataType:ZYNetWorkResponseDataTypeCache];
-                    }
-                }else {
-                    [self successBlock:dic dataType:ZYNetWorkResponseDataTypeNetWork];
-                }
-                
+                [self successBlock:dic dataType:ZYNetWorkResponseDataTypeNetWork];
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                     [self saveCache:dic];
                 });
             }
-        }else {
+        } else {
             [self successBlock:dic dataType:ZYNetWorkResponseDataTypeNetWork];
         }
         [ZYAppNetWorkAgent.sharedAgent removeRequest:self];
