@@ -632,6 +632,7 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
             dictionary = nil;
         }
     }
+    ZYNSLog(@" 请求地址：%@ \n 请求结果：%@",self.requestUrl,[self dicToJson:dictionary]);
     return dictionary;
 }
 
