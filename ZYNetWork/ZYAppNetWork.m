@@ -103,7 +103,6 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
         return;
     }
     
-    
     id localCache = [self archiveCache];
     /// 读取缓存为空
     if (!localCache) {
@@ -303,16 +302,16 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
 /// 检测网络状态
 - (BOOL)checkNetworkIsAvailable
 {
-    if ([[ZYNetWorkSingleton shareSingleton].networkType isEqualToString:@"-1"]) {
-        NSMutableDictionary *faileDic = NSMutableDictionary.alloc.init;
-        [faileDic setObject:@"未连接到网络" forKey:@"msg"];
-        [faileDic setObject:@"faile" forKey:@"state"];
-        [faileDic setObject:NSDictionary.dictionary forKey:@"data"];
-        self.responseData.responseStatus = ZYNetWorkResponseFaileAndNET;
-        [self clearResponseDataConfig];
-        self.responseData.faileNETResponse = faileDic;
-        return NO;
-    }
+//    if ([[ZYNetWorkSingleton shareSingleton].networkType isEqualToString:@"-1"]) {
+//        NSMutableDictionary *faileDic = NSMutableDictionary.alloc.init;
+//        [faileDic setObject:@"未连接到网络" forKey:@"msg"];
+//        [faileDic setObject:@"faile" forKey:@"state"];
+//        [faileDic setObject:NSDictionary.dictionary forKey:@"data"];
+//        self.responseData.responseStatus = ZYNetWorkResponseFaileAndNET;
+//        [self clearResponseDataConfig];
+//        self.responseData.faileNETResponse = faileDic;
+//        return NO;
+//    }
     
     return  YES;
 }
