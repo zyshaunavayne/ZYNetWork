@@ -51,6 +51,11 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
         return;
     }
     
+    /// 图片/附件模式 默认需要缓存
+    if (self.requestType == ZYNetWorkRequestTypeFILES) {
+        self.isCache = YES;
+    }
+    
     if (!_manager) {
         /// 配置安全协议
         self.manager.securityPolicy.validatesDomainName = self.validatesDomainName;
@@ -146,6 +151,9 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
             break;
         case ZYNetWorkRequestTypePATCH:
             [self PATCH];
+            break;
+        case ZYNetWorkRequestTypeFILES:
+            [self FILES];
             break;
         default:
             ZYNSLog(@"未配置对应访问方式");
@@ -296,6 +304,34 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
     [ZYAppNetWorkAgent.sharedAgent addRequest:self];
 }
 
+- (void)FILES
+{
+    __weak __typeof(self)weakSelf = self;
+    NSURLSessionDownloadTask *dataTask;
+    dataTask = [self.manager downloadTaskWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.requestUrl]] progress:^(NSProgress * _Nonnull downloadProgress) {
+        [weakSelf progessBlock:downloadProgress];
+    } destination:^NSURL * _Nonnull(NSURL * _Nonnull targetPath, NSURLResponse * _Nonnull response) {
+        NSURL *documentsDirectoryURL = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:NO error:nil];
+        NSURL *fileUrl = [documentsDirectoryURL URLByAppendingPathComponent:[weakSelf.requestUrl lastPathComponent]];
+        return fileUrl;
+    } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
+        if (!error) {
+            NSMutableDictionary *success = NSMutableDictionary.alloc.init;
+            [success setValue:@(200) forKey:@"code"];
+            [success setValue:@"请求成功" forKey:@"message"];
+            NSMutableDictionary *dic = NSMutableDictionary.alloc.init;
+            [dic setValue:[filePath absoluteString] forKey:@"file"];
+            [success setValue:dic forKey:@"data"];
+            [weakSelf handleRequestSuccess:success];
+        } else {
+            [weakSelf faileBlock:error message:@"下载失败!"];
+        }
+    }];
+    [dataTask resume];
+    self.dataTask = (NSURLSessionDataTask *)dataTask;
+    [ZYAppNetWorkAgent.sharedAgent addRequest:self];
+}
+
 #pragma mark -- 基础方法配置
 #pragma mark --
 
@@ -312,7 +348,6 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
 //        self.responseData.faileNETResponse = faileDic;
 //        return NO;
 //    }
-    
     return  YES;
 }
 
@@ -483,16 +518,14 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
 /// 设置缓存的MMKV Key
 - (NSString *)setCacheKey
 {
-    NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
     NSString *key = @"";
-    
     /// 读取header信息，例如；token、sign等
     for (NSString *headerKey in self.header.allKeys) {
         /// 因 签名随时间戳的变化而变化，所以签名不纳入key
         key = [NSString stringWithFormat:@"%@%@",key,self.header[headerKey]];
     }
     
-    NSString *mmkvKey = [NSString stringWithFormat:@"%@%@%@%@", self.requestUrl, key, [self.parameters description], [infoDictionary objectForKey:@"CFBundleShortVersionString"]];
+    NSString *mmkvKey = [NSString stringWithFormat:@"%@%@%@", self.requestUrl, key, [self.parameters description]];
     return mmkvKey;
 }
 
@@ -625,10 +658,10 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
     NSDictionary *dictionary = nil;
     if ([success isKindOfClass:NSDictionary.class]) {
         dictionary = (NSDictionary*)success;
-    }else{
+    } else {
         if (success) {
             dictionary = [NSJSONSerialization JSONObjectWithData:success options:kNilOptions error:nil];
-        }else{
+        } else {
             dictionary = nil;
         }
     }
