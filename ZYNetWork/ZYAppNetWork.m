@@ -316,12 +316,19 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
         return fileUrl;
     } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
         if (!error) {
+            /// 构造所需的success返回类型
             NSMutableDictionary *success = NSMutableDictionary.alloc.init;
             [success setValue:@(200) forKey:@"code"];
             [success setValue:@"请求成功" forKey:@"message"];
+            
+            /// 构造data中数据
             NSMutableDictionary *dic = NSMutableDictionary.alloc.init;
-            [dic setValue:[filePath absoluteString] forKey:@"file"];
+            NSData *data = [NSData dataWithContentsOfURL:filePath];
+            NSString *base64String = [weakSelf dataToBase64str:data];
+            [dic setValue:base64String forKey:@"file"];
+            
             [success setValue:dic forKey:@"data"];
+            
             [weakSelf handleRequestSuccess:success];
         } else {
             [weakSelf faileBlock:error message:@"下载失败!"];
@@ -334,6 +341,21 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
 
 #pragma mark -- 基础方法配置
 #pragma mark --
+
+- (NSString *)dataToBase64str:(NSData *)data
+{
+    /// 转成base64Str
+    NSString *base64String = [data base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];
+    /// 外部使用时，解base64方法
+    /*/
+     
+     NSData *data = [[NSData alloc] initWithBase64EncodedString:base64String options:NSDataBase64DecodingIgnoreUnknownCharacters];
+     
+     /// webView加载PDF文件示例
+     [webView loadData:data MIMEType:@"application/pdf" characterEncodingName:@"UTF-8" baseURL:[NSURL fileURLWithPath:NSTemporaryDirectory()]];
+     */
+    return base64String;
+}
 
 /// 检测网络状态
 - (BOOL)checkNetworkIsAvailable
