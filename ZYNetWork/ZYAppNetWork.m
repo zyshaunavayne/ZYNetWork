@@ -51,9 +51,10 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
         return;
     }
     
-    /// 图片/附件模式 默认需要缓存
+    /// 图片/附件模式 默认需要缓存，且会立即返回
     if (self.requestType == ZYNetWorkRequestTypeFILES) {
         self.isCache = YES;
+        self.isDirectlyBackCahche = YES;
     }
     
     if (!_manager) {
