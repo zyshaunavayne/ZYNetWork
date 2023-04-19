@@ -548,6 +548,10 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
         string = @"BODY";
     } else if (self.requestType == ZYNetWorkRequestTypeDELETE) {
         string = @"DELETE";
+    }  else if (self.requestType == ZYNetWorkRequestTypeFILES) {
+        string = @"FILES";
+    }  else if (self.requestType == ZYNetWorkRequestTypeFORMDATA) {
+        string = @"FORMDATA";
     } else {
         string = @"未知";
     }
