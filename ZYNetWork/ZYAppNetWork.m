@@ -156,6 +156,9 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
         case ZYNetWorkRequestTypeFILES:
             [self FILES];
             break;
+        case ZYNetWorkRequestTypeFORMDATA:
+            [self FORMDATA];
+            break;
         default:
             ZYNSLog(@"未配置对应访问方式");
             break;
@@ -337,6 +340,43 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
     }];
     [dataTask resume];
     self.dataTask = (NSURLSessionDataTask *)dataTask;
+    [ZYAppNetWorkAgent.sharedAgent addRequest:self];
+}
+
+- (void)FORMDATA
+{
+    __weak __typeof(self)weakSelf = self;
+    NSURLSessionDataTask *dataTask;
+    dataTask = [self.manager POST:self.requestUrl parameters:self.parameters headers:self.header constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        if (weakSelf.formDataType == ZYNetWorkFormDataTypePhoto) {
+            for (UIImage *image in weakSelf.formDataArray) {
+                [formData appendPartWithFileData:UIImageJPEGRepresentation(image,
+                                                                           1.0)
+                                            name:weakSelf.formDataName
+                                        fileName:weakSelf.formDataFileName ? : @"file.png"
+                                        mimeType:@"image/png"];
+            }
+        } else {
+            NSLog(@"formDataType == 未知类型");
+        }
+    } progress:^(NSProgress * _Nonnull uploadProgress) {
+        __strong __typeof(weakSelf)self = weakSelf; if (!self) return;
+        
+        if (dataTask != self.dataTask) { return; }
+        [self progessBlock:uploadProgress];
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        __strong __typeof(weakSelf)self = weakSelf; if (!self) return;
+
+        if (task != self.dataTask) { return; }
+        [self handleRequestSuccess:responseObject];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        __strong __typeof(weakSelf)self = weakSelf; if (!self) return;
+        if (task != self.dataTask) { return; }
+        
+        [self faileBlock:error message:ZYNWServerErrorMsg];
+    }];
+    [dataTask resume];
+    self.dataTask = dataTask;
     [ZYAppNetWorkAgent.sharedAgent addRequest:self];
 }
 

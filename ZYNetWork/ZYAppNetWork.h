@@ -15,6 +15,7 @@
  如网络请求失败、查询数据不匹配、请检查配置是否正确
  */
 
+#pragma mark -- 代理
 @class ZYAppNetWork;
 @protocol ZYAppNetWorkDelegate <NSObject>
 @optional
@@ -37,6 +38,7 @@
 
 @end
 
+#pragma mark -- 所需枚举
 /// 访问方式
 typedef NS_ENUM(NSUInteger, ZYNetWorkRequestType) {
     ZYNetWorkRequestTypePOST = 0, //post
@@ -46,6 +48,7 @@ typedef NS_ENUM(NSUInteger, ZYNetWorkRequestType) {
     ZYNetWorkRequestTypeBODY, // body
     ZYNetWorkRequestTypePATCH, //patch
     ZYNetWorkRequestTypeFILES, // 图片、文件、附件。默认会开启缓存且会立即返回
+    ZYNetWorkRequestTypeFORMDATA // formData表单上传。参考formdata模块
 };
 
 /// 请求头格式
@@ -60,8 +63,14 @@ typedef NS_ENUM(NSUInteger, ZYNetWorkResponseSerializerType) {
     ZYNetWorkResponseSerializerTypeHTTP //HTTP Response
 };
  
-@interface ZYAppNetWork : NSObject
+/// formData表单类型
+typedef NS_ENUM(NSUInteger, ZYNetWorkFormDataType) {
+    ZYNetWorkFormDataTypePhoto = 0, // 图片
+    ZYNetWorkFormDataTypeOther // 其他
+};
 
+@interface ZYAppNetWork : NSObject
+#pragma mark -- 基础入参
 /// 访问的唯一ID，用户区分request
 @property (nonatomic, copy, readonly) NSString * requestId;
 
@@ -110,6 +119,20 @@ typedef NS_ENUM(NSUInteger, ZYNetWorkResponseSerializerType) {
 /// 是否移除null的值，默认NO
 @property (nonatomic, assign) BOOL removesNullValues;
 
+#pragma mark -- formData 配参。仅ZYNetWorkRequestType = FormData有效
+/// 附件数组，多个上传。必填项
+@property (nonatomic, strong) NSArray *formDataArray;
+
+/// 数据类型 默认图片类型。
+@property (nonatomic, assign) ZYNetWorkFormDataType formDataType;
+
+/// 后台接收name。key。必填项
+@property (nonatomic, strong) NSString *formDataName;
+
+/// 文件名 默认为formDataFileName.png
+@property (nonatomic, strong) NSString *formDataFileName;
+
+#pragma mark -- method
 /// 开始访问 需设置代理 否则没有回调
 - (void)startRequest;
 
