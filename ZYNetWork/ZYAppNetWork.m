@@ -114,6 +114,14 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
     if (!localCache) {
         [self goOnRequest];
         return;
+    } else {
+        /// 如果为图片、附件，则不需要再继续发起访问，并发起success代理。防止重复性获取图片。
+        if (self.requestType == ZYNetWorkRequestTypeFILES) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self successBlock:localCache dataType:ZYNetWorkResponseDataTypeCache];
+            });
+            return;
+        }
     }
     
     /// 直接返回缓存并获取新数据更新缓存
@@ -353,7 +361,7 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
                 [formData appendPartWithFileData:UIImageJPEGRepresentation(image,
                                                                            1.0)
                                             name:weakSelf.formDataName
-                                        fileName:weakSelf.formDataFileName ? : @"file.png"
+                                        fileName:[NSString stringWithFormat:@"%@.png",weakSelf.formDataFileName] ? : @"test.png"
                                         mimeType:@"image/png"];
             }
         } else {
