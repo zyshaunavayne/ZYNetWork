@@ -55,7 +55,7 @@ static NSString *ZYNWAes128Key = @"payload";
     if (_successBlock) { _successBlock(self, data); }
     if (_completionBlock) { _completionBlock(YES); }
     
-    if (self.isDirectlyBackCahche && self.isCache) {
+    if (self.isDirectlyBackCahche && self.isCache && !self.isNoBackToCache) {
         if (self.isDirectlyBack) {
             [self clearBlock];
             self.isDirectlyBack = NO;

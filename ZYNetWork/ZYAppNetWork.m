@@ -51,12 +51,6 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
         return;
     }
     
-    /// 图片/附件模式 默认需要缓存，且会立即返回
-    if (self.requestType == ZYNetWorkRequestTypeFILES) {
-        self.isCache = YES;
-        self.isDirectlyBackCahche = YES;
-    }
-    
     /// 当设置此属性时，默认会将isCache、isDirectlyBackCahche设置为NO。eg：子类中重写后，可能会有影响；在子类中手动改成NO即可。
     if (self.isNoBackToCache) {
         self.isCache = NO;
@@ -110,7 +104,7 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
 - (void)gotoRequest
 {
     /// 如果忽略缓存
-    if (!self.isCache) {
+    if (!self.isCache || self.isNoBackToCache) {
         [self goOnRequest];
         return;
     }
@@ -716,7 +710,7 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
 {
     NSDictionary *dic = [self returnRequestResult:responseObject];
     if ([self checkReuqestResultCorrect:dic]) { //是否请求成功 赋值self.requestData 否则self.requestData = nil
-        if (self.isCache) {
+        if (self.isCache && !self.isNoBackToCache) {
             if (![self compareLoaclCacheWithRequestDataIsSame:dic]) {
                 [self successBlock:dic dataType:ZYNetWorkResponseDataTypeNetWork];
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

@@ -47,7 +47,7 @@ typedef NS_ENUM(NSUInteger, ZYNetWorkRequestType) {
     ZYNetWorkRequestTypePUT, //put
     ZYNetWorkRequestTypeBODY, // body
     ZYNetWorkRequestTypePATCH, //patch
-    ZYNetWorkRequestTypeFILES, // 图片、文件、附件。默认会开启缓存且会立即返回
+    ZYNetWorkRequestTypeFILES, // 图片、文件、附件
     ZYNetWorkRequestTypeFORMDATA // formData表单上传。参考formdata模块
 };
 
