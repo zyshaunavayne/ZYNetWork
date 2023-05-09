@@ -57,6 +57,12 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
         self.isDirectlyBackCahche = YES;
     }
     
+    /// 当设置此属性时，默认会将isCache、isDirectlyBackCahche设置为NO。eg：子类中重写后，可能会有影响；在子类中手动改成NO即可。
+    if (self.isNoBackToCache) {
+        self.isCache = NO;
+        self.isDirectlyBackCahche = NO;
+    }
+    
     if (!_manager) {
         /// 配置安全协议
         self.manager.securityPolicy.validatesDomainName = self.validatesDomainName;
@@ -719,6 +725,11 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
             }
         } else {
             [self successBlock:dic dataType:ZYNetWorkResponseDataTypeNetWork];
+            if (self.isNoBackToCache) { /// 不管是否开启有缓存，都会进行缓存操作，且不返回缓存数据
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    [self saveCache:dic];
+                });
+            }
         }
         [ZYAppNetWorkAgent.sharedAgent removeRequest:self];
     }else{

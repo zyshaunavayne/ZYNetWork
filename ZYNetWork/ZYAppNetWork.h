@@ -104,6 +104,10 @@ typedef NS_ENUM(NSUInteger, ZYNetWorkFormDataType) {
 /// 是否需要立即返回网络请求数据。 eg：仅开启缓存时候有效。
 @property (nonatomic, assign) BOOL isDirectlyBackCahche;
 
+/// 是否需要返回缓存。且默认不返回，也不缓存。
+/// eg：当为YES时，isCache、isDirectlyBackCahche 请设置为NO。且会进行缓存操作，但不会返回缓存结果。
+@property (nonatomic, assign) BOOL isNoBackToCache;
+
 /// 设置安全协议 默认为HTTPS访问时 NO
 @property (nonatomic, assign) BOOL validatesDomainName;
 
