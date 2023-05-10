@@ -564,7 +564,12 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
         string = @"未知";
     }
     
-    ZYNSLog(@" 请求配置信息打印 \n 请求方式 == %@ \n 请求入参 == %@ \n 请求URL地址 == %@ \n 请求Header信息 == %@",string,[self dicToJson:self.parameters],self.requestUrl,self.header);
+    if (!self.isNoBackToCache) {
+        ZYNSLog(@" 请求配置信息打印 \n 请求方式 == %@ \n 请求入参 == %@ \n 请求URL地址 == %@ \n 请求Header信息 == %@",string,[self dicToJson:self.parameters],self.requestUrl,self.header);
+    } else {
+        ZYNSLog(@"纯净模式开启");
+    }
+    
     return self.parameters;
 }
 
@@ -601,6 +606,13 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
     }
     
     NSString *mmkvKey = [NSString stringWithFormat:@"%@%@%@", self.requestUrl, key, [self.parameters description]];
+    if (self.requestType == ZYNetWorkRequestTypePOST) {
+        mmkvKey = [NSString stringWithFormat:@"%@ZYNetWorkRequestTypePOST",mmkvKey];
+    }
+    
+    if (self.requestType == ZYNetWorkRequestTypeFILES) {
+        mmkvKey = [NSString stringWithFormat:@"%@ZYNetWorkRequestTypeFILES",mmkvKey];
+    }
     return mmkvKey;
 }
 
@@ -610,10 +622,15 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
 {
     if (success) {
         [ZYMMKVManager.getMMKV setObject:success forKey:[self setCacheKey]];
-        ZYNSLog(@" 接口缓存 \n 接口：%@ \n 缓存成功！！",self.requestUrl);
+        if (!self.isNoBackToCache) {
+            ZYNSLog(@" 接口缓存 \n 接口：%@ \n 缓存成功！！",self.requestUrl);
+        }
         return YES;
     }
-    ZYNSLog(@" 接口缓存 \n 接口：%@ \n 缓存失败！！",self.requestUrl);
+    
+    if (!self.isNoBackToCache) {
+        ZYNSLog(@" 接口缓存 \n 接口：%@ \n 缓存失败！！",self.requestUrl);
+    }
     return NO;
 }
 
@@ -669,7 +686,10 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
 - (void)progessBlock:(NSProgress * _Nonnull)progress
 {
     // 刷新频率高 异步处理(进度回调'AFNetworking'内部回调默认在异步)
-    ZYNSLog(@" 请求地址：%@ \n 访问进度：%@",self.requestUrl,progress.localizedDescription);
+    if (!self.isNoBackToCache) {
+        ZYNSLog(@" 请求地址：%@ \n 访问进度：%@",self.requestUrl,progress.localizedDescription);
+    }
+    
     self.responseData.progress = progress;
     self.responseData.responseStatus = ZYNetWorkResponseRequesting;
     if (self.delegate && [self.delegate respondsToSelector:@selector(requestProgress:)]) {
@@ -745,7 +765,14 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
             dictionary = nil;
         }
     }
-    ZYNSLog(@" 请求地址：%@ \n 请求结果：%@",self.requestUrl,[self dicToJson:dictionary]);
+    
+    if (!self.isNoBackToCache) {
+        if (self.requestType != ZYNetWorkRequestTypeFILES) {
+            ZYNSLog(@" 请求地址：%@ \n 请求结果：%@",self.requestUrl,[self dicToJson:dictionary]);
+        } else {
+            ZYNSLog(@" 请求地址：%@ \n 请求结果：%@",self.requestUrl,@"ZYNetWorkRequestTypeFILES数据流不展示");
+        }
+    }
     return dictionary;
 }
 
