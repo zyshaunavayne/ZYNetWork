@@ -733,14 +733,14 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
         if (self.isCache && !self.isNoBackToCache) {
             if (![self compareLoaclCacheWithRequestDataIsSame:dic]) {
                 [self successBlock:dic dataType:ZYNetWorkResponseDataTypeNetWork];
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                     [self saveCache:dic];
                 });
             }
         } else {
             [self successBlock:dic dataType:ZYNetWorkResponseDataTypeNetWork];
             if (self.isNoBackToCache) { /// 不管是否开启有缓存，都会进行缓存操作，且不返回缓存数据
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                     [self saveCache:dic];
                 });
             }
@@ -831,5 +831,3 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
 }
 
 @end
-
-
