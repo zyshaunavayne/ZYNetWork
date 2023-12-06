@@ -48,7 +48,8 @@ typedef NS_ENUM(NSUInteger, ZYNetWorkRequestType) {
     ZYNetWorkRequestTypeBODY, // body
     ZYNetWorkRequestTypePATCH, //patch
     ZYNetWorkRequestTypeFILES, // 图片、文件、附件
-    ZYNetWorkRequestTypeFORMDATA // formData表单上传。参考formdata模块
+    ZYNetWorkRequestTypeFORMDATA, // formData表单上传。参考formdata模块
+    ZYNetWorkRequestTypeWebPage // 网页 ->直接返回网页的html String
 };
 
 /// 请求头格式

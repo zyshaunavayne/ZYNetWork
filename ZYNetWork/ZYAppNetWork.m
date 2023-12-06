@@ -116,7 +116,7 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
         return;
     } else {
         /// 如果为图片、附件，则不需要再继续发起访问，并发起success代理。防止重复性获取图片。
-        if (self.requestType == ZYNetWorkRequestTypeFILES) {
+        if (self.requestType == ZYNetWorkRequestTypeFILES || self.requestType == ZYNetWorkRequestTypeWebPage) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self successBlock:localCache dataType:ZYNetWorkResponseDataTypeCache];
             });
@@ -166,6 +166,9 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
             break;
         case ZYNetWorkRequestTypeFORMDATA:
             [self FORMDATA];
+            break;
+        case ZYNetWorkRequestTypeWebPage:
+            [self WEBPAGE];
             break;
         default:
             ZYNSLog(@"未配置对应访问方式");
@@ -388,6 +391,41 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
     [ZYAppNetWorkAgent.sharedAgent addRequest:self];
 }
 
+- (void)WEBPAGE
+{
+    __weak __typeof(self)weakSelf = self;
+    NSURLSessionDownloadTask *dataTask;
+    dataTask = [self.manager downloadTaskWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.requestUrl]] progress:^(NSProgress * _Nonnull downloadProgress) {
+        [weakSelf progessBlock:downloadProgress];
+    } destination:^NSURL * _Nonnull(NSURL * _Nonnull targetPath, NSURLResponse * _Nonnull response) {
+        NSURL *documentsDirectoryURL = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:NO error:nil];
+        NSURL *fileUrl = [documentsDirectoryURL URLByAppendingPathComponent:[weakSelf.requestUrl lastPathComponent]];
+        return fileUrl;
+    } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
+        if (!error) {
+            /// 构造所需的success返回类型
+            NSMutableDictionary *success = NSMutableDictionary.alloc.init;
+            [success setValue:@(200) forKey:@"code"];
+            [success setValue:@"请求成功" forKey:@"message"];
+            
+            /// 构造data中数据
+            NSMutableDictionary *dic = NSMutableDictionary.alloc.init;
+            NSData *data = [NSData dataWithContentsOfURL:filePath];
+            NSString *htmlString = [NSString.alloc initWithData:data encoding:NSUTF8StringEncoding];
+            [dic setValue:htmlString forKey:@"webpage"];
+            
+            [success setValue:dic forKey:@"data"];
+            
+            [weakSelf handleRequestSuccess:success];
+        } else {
+            [weakSelf faileBlock:error message:@"加载网页失败!"];
+        }
+    }];
+    [dataTask resume];
+    self.dataTask = (NSURLSessionDataTask *)dataTask;
+    [ZYAppNetWorkAgent.sharedAgent addRequest:self];
+}
+
 #pragma mark -- 基础方法配置
 #pragma mark --
 
@@ -560,6 +598,8 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
         string = @"FILES";
     }  else if (self.requestType == ZYNetWorkRequestTypeFORMDATA) {
         string = @"FORMDATA";
+    }  else if (self.requestType == ZYNetWorkRequestTypeWebPage) {
+        string = @"WEBPAGE";
     } else {
         string = @"未知";
     }
@@ -613,6 +653,11 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
     if (self.requestType == ZYNetWorkRequestTypeFILES) {
         mmkvKey = [NSString stringWithFormat:@"%@ZYNetWorkRequestTypeFILES",mmkvKey];
     }
+    
+    if (self.requestType == ZYNetWorkRequestTypeWebPage) {
+        mmkvKey = [NSString stringWithFormat:@"%@ZYNetWorkRequestTypeWebPage",mmkvKey];
+    }
+    
     return mmkvKey;
 }
 
@@ -767,12 +812,17 @@ static NSString *ZYNWServerErrorMsg = @"服务器异常";
     }
     
     if (!self.isNoBackToCache) {
-        if (self.requestType != ZYNetWorkRequestTypeFILES) {
+        if (self.requestType != ZYNetWorkRequestTypeFILES && self.requestType != ZYNetWorkRequestTypeWebPage) {
             ZYNSLog(@" 请求地址：%@ \n 请求结果：%@",self.requestUrl,[self dicToJson:dictionary]);
         } else {
-            ZYNSLog(@" 请求地址：%@ \n 请求结果：%@",self.requestUrl,@"ZYNetWorkRequestTypeFILES数据流不展示");
+            if (self.requestType == ZYNetWorkRequestTypeFILES) {
+                ZYNSLog(@" 请求地址：%@ \n 请求结果：%@",self.requestUrl,@"ZYNetWorkRequestTypeFILES数据流不展示");
+            } else {
+                ZYNSLog(@" 请求地址：%@ \n 请求结果：%@",self.requestUrl,@"ZYNetWorkRequestTypeWebPage数据流不展示");
+            }
         }
     }
+    
     return dictionary;
 }
 
